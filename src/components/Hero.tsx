@@ -4,54 +4,59 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 const Hero = () => {
-  const titleRef = useScrollAnimation({ threshold: 0.2 });
-  const subtitleRef = useScrollAnimation({ threshold: 0.2, rootMargin: "50px" });
-  const imageRef = useScrollAnimation({ threshold: 0.1, rootMargin: "30px" });
+  const titleRef = useScrollAnimation();
+  const subtitleRef = useScrollAnimation({ delay: 200 });
+  const imageRef = useScrollAnimation({ delay: 400 });
 
   return (
-    <section className="min-h-screen flex flex-col justify-center pt-20 pb-16 md:pt-28 md:pb-24">
-      <div className="container mx-auto px-6 md:px-12">
-        <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
+    <section className="min-h-screen relative overflow-hidden pt-24">
+      <div className="absolute inset-0 bg-gradient-to-br from-deep-purple via-accent-purple to-electric-violet opacity-20" />
+      
+      <div className="container mx-auto px-6 pt-12 pb-20 relative">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <h1
               ref={titleRef as React.RefObject<HTMLHeadingElement>}
-              className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight tracking-tighter opacity-0"
+              className="text-5xl md:text-7xl lg:text-8xl font-satoshi font-bold opacity-0"
             >
-              Modern essentials for mindful living
+              Advanced Ball <span className="gradient-text">Technology</span>
             </h1>
             <p
               ref={subtitleRef as React.RefObject<HTMLParagraphElement>}
-              className="text-lg md:text-xl text-charcoal-light max-w-md opacity-0"
+              className="text-xl text-gray-300 max-w-xl opacity-0"
             >
-              Curated collections of premium lifestyle products designed to elevate your everyday experiences.
+              Precision engineered for ultimate performance. Experience the next generation of basketball technology.
             </p>
             <div className="flex flex-wrap gap-4">
               <Button
-                className="group text-base px-8 py-6 rounded-full transition-all duration-300"
+                className="group bg-electric-violet hover:bg-electric-violet/90 text-lg px-8 py-6"
               >
-                Shop Collection{" "}
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                Shop Collection
+                <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
               </Button>
               <Button
                 variant="outline"
-                className="text-base px-8 py-6 rounded-full bg-transparent border-charcoal/20 hover:bg-charcoal/5"
+                className="text-lg px-8 py-6 border-white/20 hover:bg-white/5"
               >
-                Our Story
+                Learn More
               </Button>
             </div>
           </div>
 
-          <div ref={imageRef as React.RefObject<HTMLDivElement>} className="relative opacity-0">
-            <div className="aspect-square bg-beige-dark rounded-lg overflow-hidden">
+          <div
+            ref={imageRef as React.RefObject<HTMLDivElement>}
+            className="relative opacity-0"
+          >
+            <div className="aspect-square rounded-2xl overflow-hidden glass-card p-8">
               <img
-                src="https://images.unsplash.com/photo-1618160702438-9b02ab6515c9"
-                alt="Premium lifestyle product"
-                className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                src="/lovable-uploads/56458f9d-9498-4035-9cfa-f760c1fd11df.png"
+                alt="Basketball Technology"
+                className="w-full h-full object-cover rounded-xl transition-transform duration-700 hover:scale-105"
               />
             </div>
-            <div className="absolute -bottom-8 -left-8 md:-bottom-12 md:-left-12 px-6 py-4 md:px-8 md:py-6 bg-white rounded-md shadow-sm">
-              <p className="font-space text-sm md:text-base">Latest Collection</p>
-              <h3 className="font-space text-lg md:text-2xl">Spring Essentials</h3>
+            <div className="absolute -bottom-8 -left-8 glass-card p-6 max-w-sm">
+              <p className="text-electric-violet font-medium">Latest Innovation</p>
+              <h3 className="text-xl font-satoshi mt-1">Smart Grip Technology™</h3>
             </div>
           </div>
         </div>
