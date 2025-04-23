@@ -10,17 +10,29 @@ import CustomCursor from "@/components/CustomCursor";
 
 const Index = () => {
   const [loaded, setLoaded] = useState(false);
+  const [showCustomCursor, setShowCustomCursor] = useState(false);
   
-  // Simulate page load to add initial animations
+  // Simulate page load to add initial animations and enable custom cursor with a delay
   useEffect(() => {
-    setTimeout(() => {
+    // First set content as loaded
+    const loadTimer = setTimeout(() => {
       setLoaded(true);
     }, 300);
+    
+    // Then enable custom cursor with a delay to avoid initial glitches
+    const cursorTimer = setTimeout(() => {
+      setShowCustomCursor(true);
+    }, 800);
+    
+    return () => {
+      clearTimeout(loadTimer);
+      clearTimeout(cursorTimer);
+    };
   }, []);
 
   return (
     <div className={`min-h-screen transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}>
-      <CustomCursor />
+      {showCustomCursor && <CustomCursor />}
       <Navigation />
       <Hero />
       <Collection />

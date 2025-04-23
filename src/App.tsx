@@ -13,7 +13,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
+      {/* Using only the Sonner Toaster to avoid conflicts */}
       <SonnerToaster />
       <BrowserRouter>
         <Routes>
