@@ -1,56 +1,55 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 const CustomCursor = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [hidden, setHidden] = useState(false);
+  const [hidden, setHidden] = useState(true); // Start hidden to avoid initial positioning issues
   const [clicked, setClicked] = useState(false);
   const [linkHovered, setLinkHovered] = useState(false);
+  
+  // Optimize the mousemove handler with useCallback
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    setPosition({ x: e.clientX, y: e.clientY });
+    if (hidden) setHidden(false);
+  }, [hidden]);
+
+  // Handle mouse click with debounce
+  const handleMouseDown = useCallback(() => {
+    setClicked(true);
+    setTimeout(() => setClicked(false), 150);
+  }, []);
 
   useEffect(() => {
-    const mMove = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-    };
-
-    const mDown = () => {
-      setClicked(true);
-      setTimeout(() => setClicked(false), 150);
-    };
-
-    const mLeave = () => {
-      setHidden(true);
-    };
-
-    const mEnter = () => {
-      setHidden(false);
-    };
-
-    const handleLinkHoverEvents = () => {
-      document.querySelectorAll("a, button, .interactive").forEach((el) => {
+    // Add a delay to ensure proper initialization
+    const initTimeout = setTimeout(() => {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mousedown", handleMouseDown);
+      document.addEventListener("mouseleave", () => setHidden(true));
+      document.addEventListener("mouseenter", () => setHidden(false));
+      
+      // Handle hover state for interactive elements
+      const interactiveElements = document.querySelectorAll("a, button, .interactive");
+      
+      interactiveElements.forEach((el) => {
         el.addEventListener("mouseenter", () => setLinkHovered(true));
         el.addEventListener("mouseleave", () => setLinkHovered(false));
       });
-    };
-
-    document.addEventListener("mousemove", mMove);
-    document.addEventListener("mousedown", mDown);
-    document.addEventListener("mouseleave", mLeave);
-    document.addEventListener("mouseenter", mEnter);
-    
-    handleLinkHoverEvents();
-
-    return () => {
-      document.removeEventListener("mousemove", mMove);
-      document.removeEventListener("mousedown", mDown);
-      document.removeEventListener("mouseleave", mLeave);
-      document.removeEventListener("mouseenter", mEnter);
       
-      document.querySelectorAll("a, button, .interactive").forEach((el) => {
-        el.removeEventListener("mouseenter", () => setLinkHovered(true));
-        el.removeEventListener("mouseleave", () => setLinkHovered(false));
-      });
-    };
-  }, []);
+      return () => {
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mousedown", handleMouseDown);
+        document.removeEventListener("mouseleave", () => setHidden(true));
+        document.removeEventListener("mouseenter", () => setHidden(false));
+        
+        interactiveElements.forEach((el) => {
+          el.removeEventListener("mouseenter", () => setLinkHovered(true));
+          el.removeEventListener("mouseleave", () => setLinkHovered(false));
+        });
+      };
+    }, 200);
+    
+    return () => clearTimeout(initTimeout);
+  }, [handleMouseMove, handleMouseDown]);
 
   return (
     <>

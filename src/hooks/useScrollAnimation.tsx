@@ -5,6 +5,7 @@ interface ScrollObserverOptions {
   threshold?: number;
   rootMargin?: string;
   once?: boolean;
+  delay?: number;
 }
 
 export function useScrollAnimation(options: ScrollObserverOptions = {}) {
@@ -12,6 +13,7 @@ export function useScrollAnimation(options: ScrollObserverOptions = {}) {
     threshold = 0.1,
     rootMargin = "0px",
     once = true,
+    delay = 0,
   } = options;
   
   const ref = useRef<HTMLElement>(null);
@@ -21,13 +23,20 @@ export function useScrollAnimation(options: ScrollObserverOptions = {}) {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("animate-fade-in");
+            // Add delay for staggered animations if needed
+            setTimeout(() => {
+              if (ref.current) {
+                ref.current.classList.remove("opacity-0");
+                ref.current.classList.add("animate-fade-in");
+              }
+            }, delay);
             
             if (once) {
               observer.unobserve(entry.target);
             }
-          } else if (!once) {
-            entry.target.classList.remove("animate-fade-in");
+          } else if (!once && ref.current) {
+            ref.current.classList.add("opacity-0");
+            ref.current.classList.remove("animate-fade-in");
           }
         });
       },
@@ -48,7 +57,7 @@ export function useScrollAnimation(options: ScrollObserverOptions = {}) {
         observer.unobserve(currentRef);
       }
     };
-  }, [once, rootMargin, threshold]);
+  }, [once, rootMargin, threshold, delay]);
   
   return ref;
 }

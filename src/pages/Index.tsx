@@ -12,26 +12,27 @@ const Index = () => {
   const [loaded, setLoaded] = useState(false);
   const [showCustomCursor, setShowCustomCursor] = useState(false);
   
-  // Simulate page load to add initial animations and enable custom cursor with a delay
   useEffect(() => {
-    // First set content as loaded
-    const loadTimer = setTimeout(() => {
-      setLoaded(true);
-    }, 300);
+    // First make sure DOM is fully loaded
+    if (document.readyState === 'complete') {
+      handlePageLoaded();
+    } else {
+      window.addEventListener('load', handlePageLoaded);
+      return () => window.removeEventListener('load', handlePageLoaded);
+    }
     
-    // Then enable custom cursor with a delay to avoid initial glitches
-    const cursorTimer = setTimeout(() => {
-      setShowCustomCursor(true);
-    }, 800);
-    
-    return () => {
-      clearTimeout(loadTimer);
-      clearTimeout(cursorTimer);
-    };
+    function handlePageLoaded() {
+      // Set a small delay for content to appear
+      setTimeout(() => setLoaded(true), 150);
+      
+      // Add custom cursor with a longer delay to avoid flash/glitching
+      setTimeout(() => setShowCustomCursor(true), 1000);
+    }
   }, []);
 
   return (
     <div className={`min-h-screen transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}>
+      {/* Only show custom cursor after delay */}
       {showCustomCursor && <CustomCursor />}
       <Navigation />
       <Hero />
