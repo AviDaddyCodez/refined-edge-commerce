@@ -2,48 +2,63 @@
 import { useState } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { ShoppingBag } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 interface ProductCardProps {
+  id: number;
   image: string;
   name: string;
   price: string;
   category: string;
 }
 
-const ProductCard = ({ image, name, price, category }: ProductCardProps) => {
+const ProductCard = ({ id, image, name, price, category }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useScrollAnimation();
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart({ id, image, name, price, category });
+    toast.success(`${name} added to cart`);
+  };
 
   return (
-    <div
-      ref={cardRef as React.RefObject<HTMLDivElement>}
-      className="opacity-0 group cursor-pointer"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="relative overflow-hidden rounded-md mb-4 aspect-[3/4]">
-        <img
-          src={image}
-          alt={name}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-        />
-        <div
-          className={`absolute inset-0 bg-black/5 transition-opacity duration-300 ${
-            isHovered ? "opacity-100" : "opacity-0"
-          }`}
-        ></div>
-        <button
-          className={`absolute bottom-4 right-4 bg-white rounded-full p-3 shadow-md transition-all duration-300 ${
-            isHovered ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-          }`}
-        >
-          <ShoppingBag className="w-4 h-4" />
-        </button>
+    <Link to={`/products/${id}`}>
+      <div
+        ref={cardRef as React.RefObject<HTMLDivElement>}
+        className="opacity-0 group cursor-pointer"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="relative overflow-hidden rounded-md mb-4 aspect-[3/4]">
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+          <div
+            className={`absolute inset-0 bg-black/5 transition-opacity duration-300 ${
+              isHovered ? "opacity-100" : "opacity-0"
+            }`}
+          ></div>
+          <button
+            onClick={handleAddToCart}
+            className={`absolute bottom-4 right-4 bg-white rounded-full p-3 shadow-md transition-all duration-300 ${
+              isHovered ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+            }`}
+          >
+            <ShoppingBag className="w-4 h-4" />
+          </button>
+        </div>
+        <p className="text-xs text-gray-400 mb-1">{category}</p>
+        <h3 className="font-space text-lg mb-1">{name}</h3>
+        <p className="font-medium">{price}</p>
       </div>
-      <p className="text-xs text-charcoal-light mb-1">{category}</p>
-      <h3 className="font-space text-lg mb-1">{name}</h3>
-      <p className="font-medium">{price}</p>
-    </div>
+    </Link>
   );
 };
 
