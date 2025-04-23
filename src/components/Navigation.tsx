@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Menu, Search, ShoppingBag } from "lucide-react";
+import { Menu, Search, ShoppingBag, Home, Store, Info, BookOpen, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
@@ -27,41 +27,60 @@ const Navigation = () => {
       }`}
     >
       <div className="container mx-auto px-6 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-satoshi font-bold tracking-tight">
+        <Link to="/" className="text-2xl font-satoshi font-bold tracking-tight group">
           HOOPS
-          <span className="text-electric-violet">.</span>
+          <span className="text-electric-violet group-hover:text-soft-purple transition-colors">.</span>
         </Link>
 
         <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/" className="hover:text-electric-violet transition-colors">Home</Link>
-          <Link to="/products" className="hover:text-electric-violet transition-colors">Products</Link>
-          <Link to="/about" className="hover:text-electric-violet transition-colors">About Us</Link>
-          <Link to="/blog" className="hover:text-electric-violet transition-colors">Blog</Link>
-          <Link to="/contact" className="hover:text-electric-violet transition-colors">Contact</Link>
+          <Link to="/" className="flex items-center gap-2 hover:text-electric-violet transition-colors">
+            <Home size={18} />
+            Home
+          </Link>
+          <Link to="/products" className="flex items-center gap-2 hover:text-electric-violet transition-colors">
+            <Store size={18} />
+            Products
+          </Link>
+          <Link to="/about" className="flex items-center gap-2 hover:text-electric-violet transition-colors">
+            <Info size={18} />
+            About Us
+          </Link>
+          <Link to="/blog" className="flex items-center gap-2 hover:text-electric-violet transition-colors">
+            <BookOpen size={18} />
+            Blog
+          </Link>
+          <Link to="/contact" className="flex items-center gap-2 hover:text-electric-violet transition-colors">
+            <Mail size={18} />
+            Contact
+          </Link>
         </nav>
 
         <div className="flex items-center space-x-6">
-          <Button variant="ghost" size="icon" className="text-white hover:text-electric-violet">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-white hover:text-electric-violet hover:scale-110 transition-all"
+          >
             <Search className="w-5 h-5" />
           </Button>
           <Button 
             variant="ghost" 
             size="icon" 
-            className="text-white hover:text-electric-violet relative"
+            className="text-white hover:text-electric-violet hover:scale-110 transition-all relative"
             onClick={() => setIsCartOpen(true)}
           >
             <ShoppingBag className="w-5 h-5" />
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 w-5 h-5 bg-electric-violet text-white text-xs rounded-full flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 w-5 h-5 bg-electric-violet text-white text-xs rounded-full flex items-center justify-center animate-pulse">
                 {cartCount}
               </span>
             )}
           </Button>
-          <Button variant="ghost" size="icon" className="md:hidden text-white hover:text-electric-violet">
+          <Button variant="ghost" size="icon" className="md:hidden text-white hover:text-electric-violet hover:scale-110 transition-all">
             <Menu className="w-5 h-5" />
           </Button>
           <Link to="/contact">
-            <Button className="hidden md:inline-flex bg-electric-violet hover:bg-electric-violet/90">
+            <Button className="hidden md:inline-flex bg-electric-violet hover:bg-electric-violet/90 hover:scale-105 transition-all">
               Contact us
             </Button>
           </Link>
