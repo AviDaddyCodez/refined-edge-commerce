@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Toaster } from "sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
@@ -13,31 +12,36 @@ import ContactPage from "./pages/ContactPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import { CartProvider } from "./context/CartContext";
 import CartSidebar from "./components/CartSidebar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
+// Create the QueryClient instance outside of the component
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+const App: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
       <CartProvider>
         <div className="min-h-screen bg-deep-purple text-white">
           <Toaster position="top-right" theme="dark" />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route path="/products/:id" element={<ProductDetailPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/blog" element={<BlogPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <CartSidebar />
+            {/* Add TooltipProvider within the React component tree */}
+            <TooltipProvider>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/products" element={<ProductsPage />} />
+                <Route path="/products/:id" element={<ProductDetailPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              <CartSidebar />
+            </TooltipProvider>
           </BrowserRouter>
         </div>
       </CartProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+};
 
 export default App;
