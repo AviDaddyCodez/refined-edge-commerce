@@ -1,21 +1,23 @@
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import ProductsPage from "./pages/ProductsPage";
-import AboutPage from "./pages/AboutPage";
-import BlogPage from "./pages/BlogPage";
-import BlogPostPage from "./pages/BlogPostPage";
-import ContactPage from "./pages/ContactPage";
-import ProductDetailPage from "./pages/ProductDetailPage";
-import CheckoutPage from "./pages/CheckoutPage";
-import OrderSuccessPage from "./pages/OrderSuccessPage";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "./context/CartContext";
 import CartSidebar from "./components/CartSidebar";
-import { TooltipProvider } from "@/components/ui/tooltip";
+
+// Lazy load pages to improve initial load performance
+const Index = React.lazy(() => import("./pages/Index"));
+const ProductsPage = React.lazy(() => import("./pages/ProductsPage"));
+const ProductDetailPage = React.lazy(() => import("./pages/ProductDetailPage"));
+const AboutPage = React.lazy(() => import("./pages/AboutPage"));
+const BlogPage = React.lazy(() => import("./pages/BlogPage"));
+const BlogPostPage = React.lazy(() => import("./pages/BlogPostPage"));
+const ContactPage = React.lazy(() => import("./pages/ContactPage"));
+const CheckoutPage = React.lazy(() => import("./pages/CheckoutPage"));
+const OrderSuccessPage = React.lazy(() => import("./pages/OrderSuccessPage"));
+const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 // Create the QueryClient instance outside of the component
 const queryClient = new QueryClient();
@@ -29,18 +31,20 @@ const App: React.FC = () => {
             <div className="min-h-screen bg-deep-purple text-white">
               <Toaster position="top-right" theme="dark" />
               <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/products" element={<ProductsPage />} />
-                  <Route path="/products/:id" element={<ProductDetailPage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/blog" element={<BlogPage />} />
-                  <Route path="/blog/:id" element={<BlogPostPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/checkout" element={<CheckoutPage />} />
-                  <Route path="/order-success" element={<OrderSuccessPage />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                <Suspense fallback={<div>Loading...</div>}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/products" element={<ProductsPage />} />
+                    <Route path="/products/:id" element={<ProductDetailPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/blog" element={<BlogPage />} />
+                    <Route path="/blog/:id" element={<BlogPostPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/checkout" element={<CheckoutPage />} />
+                    <Route path="/order-success" element={<OrderSuccessPage />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
                 <CartSidebar />
               </BrowserRouter>
             </div>
