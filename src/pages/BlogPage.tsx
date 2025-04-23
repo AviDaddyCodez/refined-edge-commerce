@@ -3,10 +3,12 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import Navigation from "@/components/Navigation";
 import CustomCursor from "@/components/CustomCursor";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import Footer from "@/components/Footer";
 
 const blogPosts = [
   {
-    id: 1,
+    id: "1",
     title: "The Evolution of Basketball Technology",
     excerpt: "Exploring how technology has transformed the game of basketball over the decades.",
     category: "Technology",
@@ -15,7 +17,7 @@ const blogPosts = [
     image: "https://images.unsplash.com/photo-1546519638-68e109498ffc",
   },
   {
-    id: 2,
+    id: "2",
     title: "How to Choose the Perfect Basketball",
     excerpt: "A comprehensive guide to selecting the right basketball for your playing style and environment.",
     category: "Guides",
@@ -24,7 +26,7 @@ const blogPosts = [
     image: "https://images.unsplash.com/photo-1519861531473-9200262188bf",
   },
   {
-    id: 3,
+    id: "3",
     title: "The Psychology of Winning",
     excerpt: "Understanding the mental aspects that separate good players from great champions.",
     category: "Psychology",
@@ -33,7 +35,7 @@ const blogPosts = [
     image: "https://images.unsplash.com/photo-1577471488278-16eec37ffcc2",
   },
   {
-    id: 4,
+    id: "4",
     title: "Basketball Training: Recovery Tips",
     excerpt: "Essential recovery techniques to keep your body in peak condition throughout the season.",
     category: "Training",
@@ -51,9 +53,23 @@ const BlogPage = () => {
       <CustomCursor />
       <Navigation />
       
-      {/* Hero section */}
-      <section className="pt-32 pb-20 bg-deep-purple">
-        <div className="container mx-auto px-6">
+      {/* Hero section with neon grid lines */}
+      <section className="pt-32 pb-20 bg-deep-purple relative overflow-hidden">
+        {/* Neon grid lines in background */}
+        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+          <div className="w-full h-full grid grid-cols-6 gap-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="w-px h-full bg-gradient-to-b from-electric-violet via-soft-purple to-transparent"></div>
+            ))}
+          </div>
+          <div className="w-full h-full grid grid-rows-6 gap-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="w-full h-px bg-gradient-to-r from-electric-violet via-soft-purple to-transparent"></div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="container mx-auto px-6 relative z-10">
           <h1 
             ref={titleRef as React.RefObject<HTMLHeadingElement>}
             className="text-4xl md:text-5xl lg:text-6xl font-satoshi font-bold opacity-0 text-center"
@@ -79,39 +95,43 @@ const BlogPage = () => {
                   className="opacity-0"
                   key={post.id}
                 >
-                  <Card className="overflow-hidden border-none shadow-lg h-full flex flex-col">
-                    <div className="aspect-video w-full overflow-hidden">
-                      <img 
-                        src={post.image} 
-                        alt={post.title}
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                      />
-                    </div>
-                    <CardHeader>
-                      <div className="flex items-center text-sm text-gray-500 mb-2">
-                        <span>{post.category}</span>
-                        <span className="mx-2">•</span>
-                        <span>{post.date}</span>
+                  <Link to={`/blog/${post.id}`}>
+                    <Card className="overflow-hidden border-none shadow-lg h-full flex flex-col hover:shadow-xl transition-shadow duration-300 group">
+                      <div className="aspect-video w-full overflow-hidden">
+                        <img 
+                          src={post.image} 
+                          alt={post.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
                       </div>
-                      <CardTitle className="text-xl font-satoshi">
-                        {post.title}
-                      </CardTitle>
-                      <CardDescription className="text-gray-600">
-                        {post.excerpt}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardFooter className="mt-auto pt-0">
-                      <div className="text-sm text-gray-500">
-                        By {post.author}
-                      </div>
-                    </CardFooter>
-                  </Card>
+                      <CardHeader>
+                        <div className="flex items-center text-sm text-gray-500 mb-2">
+                          <span>{post.category}</span>
+                          <span className="mx-2">•</span>
+                          <span>{post.date}</span>
+                        </div>
+                        <CardTitle className="text-xl font-satoshi group-hover:text-electric-violet transition-colors">
+                          {post.title}
+                        </CardTitle>
+                        <CardDescription className="text-gray-600">
+                          {post.excerpt}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardFooter className="mt-auto pt-0">
+                        <div className="text-sm text-gray-500">
+                          By {post.author}
+                        </div>
+                      </CardFooter>
+                    </Card>
+                  </Link>
                 </div>
               );
             })}
           </div>
         </div>
       </section>
+      
+      <Footer />
     </div>
   );
 };

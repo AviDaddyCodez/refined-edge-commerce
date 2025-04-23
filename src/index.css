@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap');
 
@@ -71,6 +72,19 @@
     will-change: transform, opacity;
   }
 
+  /* Neon grid lines effect */
+  .grid-neon-lines {
+    @apply grid grid-cols-6 grid-rows-6 absolute inset-0 z-0;
+  }
+  
+  .grid-neon-lines > .vertical-line {
+    @apply w-px h-full bg-gradient-to-b from-electric-violet via-soft-purple to-transparent opacity-30;
+  }
+  
+  .grid-neon-lines > .horizontal-line {
+    @apply w-full h-px bg-gradient-to-r from-electric-violet via-soft-purple to-transparent opacity-30;
+  }
+
   /* Animation definitions */
   @keyframes fade-in {
     from {
@@ -119,5 +133,20 @@
   
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-white/50;
+  }
+  
+  /* Neon effect for elements */
+  .neon-glow {
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.5), 
+                0 0 10px rgba(139, 92, 246, 0.3);
+  }
+  
+  /* Blog content styles */
+  .blog-content h2 {
+    @apply text-2xl font-bold mt-8 mb-4 text-charcoal;
+  }
+  
+  .blog-content p {
+    @apply text-gray-600 mb-4;
   }
 }

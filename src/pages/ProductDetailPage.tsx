@@ -1,11 +1,11 @@
 
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import Navigation from "@/components/Navigation";
 import CustomCursor from "@/components/CustomCursor";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Star, ChevronDown } from "lucide-react";
+import { ShoppingBag, Star, ChevronDown, ArrowLeft } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
 
@@ -100,6 +100,7 @@ const productsData = [
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const product = productsData.find(p => p.id === Number(id)) || productsData[0]; // Fallback to first product
+  const navigate = useNavigate();
   
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -123,6 +124,10 @@ const ProductDetailPage = () => {
     toast.success(`${quantity} ${product.name}${quantity > 1 ? 's' : ''} added to cart`);
   };
 
+  const handleGoBack = () => {
+    navigate(-1); // Go back to previous page
+  };
+
   return (
     <div className="min-h-screen">
       <CustomCursor />
@@ -130,24 +135,38 @@ const ProductDetailPage = () => {
       
       <section className="pt-32 pb-24">
         <div className="container mx-auto px-6">
+          {/* Go Back Button */}
+          <Button 
+            variant="ghost" 
+            onClick={handleGoBack} 
+            className="mb-6 flex items-center gap-2 hover:bg-white/10"
+          >
+            <ArrowLeft size={18} />
+            <span>Go Back</span>
+          </Button>
+          
           <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
             {/* Product Images */}
             <div
               ref={imageRef as React.RefObject<HTMLDivElement>}
               className="opacity-0 space-y-4"
             >
-              <div className="aspect-square rounded-lg overflow-hidden">
+              <div className="aspect-square rounded-lg overflow-hidden relative group">
                 <img
                   src={product.images[activeImage]}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                 />
+                {/* Neon glow effect */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-300 pointer-events-none">
+                  <div className="absolute inset-0 bg-gradient-to-r from-electric-violet/30 to-soft-purple/30"></div>
+                </div>
               </div>
               <div className="flex space-x-4">
                 {product.images.map((image, index) => (
                   <button
                     key={index}
-                    className={`w-20 h-20 rounded-md overflow-hidden border-2 ${
+                    className={`w-20 h-20 rounded-md overflow-hidden border-2 transition-all hover:shadow-md hover:shadow-electric-violet/20 ${
                       activeImage === index ? "border-electric-violet" : "border-transparent"
                     }`}
                     onClick={() => setActiveImage(index)}
