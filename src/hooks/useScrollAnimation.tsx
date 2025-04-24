@@ -19,24 +19,28 @@ export function useScrollAnimation(options: ScrollObserverOptions = {}) {
   const ref = useRef<HTMLElement>(null);
   
   useEffect(() => {
+    const currentRef = ref.current;
+    
+    if (!currentRef) return;
+    
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             // Add delay for staggered animations if needed
             setTimeout(() => {
-              if (ref.current) {
-                ref.current.classList.remove("opacity-0");
-                ref.current.classList.add("animate-fade-in");
+              if (currentRef) {
+                currentRef.classList.remove("opacity-0");
+                currentRef.classList.add("animate-fade-in");
               }
             }, delay);
             
             if (once) {
               observer.unobserve(entry.target);
             }
-          } else if (!once && ref.current) {
-            ref.current.classList.add("opacity-0");
-            ref.current.classList.remove("animate-fade-in");
+          } else if (!once && currentRef) {
+            currentRef.classList.add("opacity-0");
+            currentRef.classList.remove("animate-fade-in");
           }
         });
       },
@@ -46,16 +50,10 @@ export function useScrollAnimation(options: ScrollObserverOptions = {}) {
       }
     );
     
-    const currentRef = ref.current;
-    
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
+    observer.observe(currentRef);
     
     return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
+      observer.unobserve(currentRef);
     };
   }, [once, rootMargin, threshold, delay]);
   

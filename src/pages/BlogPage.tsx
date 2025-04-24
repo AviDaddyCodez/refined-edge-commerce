@@ -89,6 +89,9 @@ const BlogPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { playSound } = useAudioEffect();
   
+  // For blog post animations - create refs upfront, not during render
+  const postRefs = useRef(new Array(blogPosts.length));
+  
   // Simulate loading
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -262,53 +265,63 @@ const BlogPage = () => {
         <div className="container mx-auto px-6">
           {filteredPosts.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-              {filteredPosts.map((post, index) => {
-                const postRef = useScrollAnimation({ delay: index * 100 });
-                
-                return (
-                  <motion.div 
-                    ref={postRef as React.RefObject<HTMLDivElement>}
-                    className="opacity-0"
-                    key={post.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    onClick={() => playSound("click")}
-                  >
-                    <Link to={`/blog/${post.id}`}>
-                      <Card className="overflow-hidden border-none shadow-lg h-full flex flex-col bg-white/5 hover:shadow-xl transition-all duration-300 group backdrop-blur-sm">
-                        <div className="aspect-video w-full overflow-hidden">
-                          <img 
-                            src={post.image} 
-                            alt={post.title}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          />
+              {filteredPosts.map((post, index) => (
+                <motion.div 
+                  key={post.id}
+                  className="opacity-0"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  onClick={() => playSound("click")}
+                  ref={(el) => {
+                    if (el) {
+                      // Store DOM element reference
+                      const htmlElement = el as unknown as HTMLElement;
+                      
+                      // Apply animation classes on mount
+                      setTimeout(() => {
+                        htmlElement.classList.remove("opacity-0");
+                        htmlElement.classList.add("animate-fade-in");
+                      }, index * 100);
+                      
+                      // Store in our refs array
+                      postRefs.current[index] = htmlElement;
+                    }
+                  }}
+                >
+                  <Link to={`/blog/${post.id}`}>
+                    <Card className="overflow-hidden border-none shadow-lg h-full flex flex-col bg-white/5 hover:shadow-xl transition-all duration-300 group backdrop-blur-sm">
+                      <div className="aspect-video w-full overflow-hidden">
+                        <img 
+                          src={post.image} 
+                          alt={post.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                      <CardHeader className="bg-gradient-to-b from-transparent to-black/5 backdrop-blur-sm">
+                        <div className="flex items-center gap-3 text-sm text-white/70 mb-2">
+                          <span className="flex items-center gap-1"><Tag size={12} /> {post.category}</span>
+                          <span className="flex items-center gap-1"><Calendar size={12} /> {post.date}</span>
                         </div>
-                        <CardHeader className="bg-gradient-to-b from-transparent to-black/5 backdrop-blur-sm">
-                          <div className="flex items-center gap-3 text-sm text-white/70 mb-2">
-                            <span className="flex items-center gap-1"><Tag size={12} /> {post.category}</span>
-                            <span className="flex items-center gap-1"><Calendar size={12} /> {post.date}</span>
-                          </div>
-                          <CardTitle className="text-xl font-satoshi text-white group-hover:text-electric-violet transition-colors">
-                            {post.title}
-                          </CardTitle>
-                          <CardDescription className="text-white/80">
-                            {post.excerpt}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardFooter className="mt-auto pt-0 flex items-center justify-between">
-                          <div className="text-sm flex items-center gap-1 text-white/60">
-                            <User size={12} /> {post.author}
-                          </div>
-                          <div className="text-electric-violet text-sm font-medium flex items-center gap-1">
-                            Read more <ArrowUpRight size={14} />
-                          </div>
-                        </CardFooter>
-                      </Card>
-                    </Link>
-                  </motion.div>
-                );
-              })}
+                        <CardTitle className="text-xl font-satoshi text-white group-hover:text-electric-violet transition-colors">
+                          {post.title}
+                        </CardTitle>
+                        <CardDescription className="text-white/80">
+                          {post.excerpt}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardFooter className="mt-auto pt-0 flex items-center justify-between">
+                        <div className="text-sm flex items-center gap-1 text-white/60">
+                          <User size={12} /> {post.author}
+                        </div>
+                        <div className="text-electric-violet text-sm font-medium flex items-center gap-1">
+                          Read more <ArrowUpRight size={14} />
+                        </div>
+                      </CardFooter>
+                    </Card>
+                  </Link>
+                </motion.div>
+              ))}
             </div>
           ) : (
             <div className="text-center py-20">
