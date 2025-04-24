@@ -19,7 +19,8 @@ const ContactPage = React.lazy(() => import("./pages/ContactPage"));
 const CheckoutPage = React.lazy(() => import("./pages/CheckoutPage"));
 const OrderSuccessPage = React.lazy(() => import("./pages/OrderSuccessPage"));
 const GamePage = React.lazy(() => import("./pages/GamePage"));
-const AuthPage = React.lazy(() => import("./pages/AuthPage"));
+const LoginPage = React.lazy(() => import("./pages/LoginPage"));
+const SignupPage = React.lazy(() => import("./pages/SignupPage"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -46,7 +47,8 @@ const App: React.FC = () => {
                       <Route path="/checkout" element={<CheckoutPage />} />
                       <Route path="/order-success" element={<OrderSuccessPage />} />
                       <Route path="/game" element={<GamePage />} />
-                      <Route path="/auth" element={<AuthPage />} />
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/signup" element={<SignupPage />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>

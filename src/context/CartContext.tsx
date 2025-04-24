@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAudioEffect } from '@/hooks/useAudioEffect';
 
 export interface CartItem {
   id: number;
@@ -36,6 +37,7 @@ export const useCart = () => {
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const { playSound } = useAudioEffect();
 
   // Load cart from localStorage on component mount
   useEffect(() => {
@@ -62,6 +64,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const addToCart = (product: Omit<CartItem, 'quantity'>) => {
+    playSound("add-to-cart");
+    
     setCart(currentCart => {
       // Check if the product is already in the cart
       const existingItemIndex = currentCart.findIndex(item => item.id === product.id);
@@ -79,10 +83,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const removeFromCart = (productId: number) => {
+    playSound("click");
     setCart(currentCart => currentCart.filter(item => item.id !== productId));
   };
 
   const updateQuantity = (productId: number, quantity: number) => {
+    playSound("click");
     setCart(currentCart => {
       return currentCart.map(item => {
         if (item.id === productId) {
