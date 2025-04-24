@@ -2,6 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface AuthContextType {
   session: Session | null;
@@ -29,6 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log("Auth state changed:", event);
         setSession(session);
         setUser(session?.user ?? null);
         setIsLoading(false);
@@ -37,6 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("Initial session check:", session ? "Logged in" : "Not logged in");
       setSession(session);
       setUser(session?.user ?? null);
       setIsLoading(false);
@@ -46,7 +49,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    setIsLoading(true);
+    try {
+      await supabase.auth.signOut();
+      console.log("Sign out successful");
+    } catch (error) {
+      console.error("Sign out error:", error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const value = {
@@ -55,6 +67,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoading,
     signOut,
   };
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
