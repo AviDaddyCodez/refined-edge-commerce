@@ -1,4 +1,3 @@
-
 import React, { Suspense } from 'react';
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -7,7 +6,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "./context/CartContext";
 import CartSidebar from "./components/CartSidebar";
 
-// Lazy load pages to improve initial load performance
 const Index = React.lazy(() => import("./pages/Index"));
 const ProductsPage = React.lazy(() => import("./pages/ProductsPage"));
 const ProductDetailPage = React.lazy(() => import("./pages/ProductDetailPage"));
@@ -17,9 +15,9 @@ const BlogPostPage = React.lazy(() => import("./pages/BlogPostPage"));
 const ContactPage = React.lazy(() => import("./pages/ContactPage"));
 const CheckoutPage = React.lazy(() => import("./pages/CheckoutPage"));
 const OrderSuccessPage = React.lazy(() => import("./pages/OrderSuccessPage"));
+const GamePage = React.lazy(() => import("./pages/GamePage"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
-// Create the QueryClient instance outside of the component
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
@@ -42,6 +40,7 @@ const App: React.FC = () => {
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/order-success" element={<OrderSuccessPage />} />
+                    <Route path="/game" element={<GamePage />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
