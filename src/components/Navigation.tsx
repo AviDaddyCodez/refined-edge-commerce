@@ -1,10 +1,15 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
 const Navigation = () => {
-  const { toggleCart } = useCart();
+  const { isCartOpen, setIsCartOpen } = useCart();
+
+  const toggleCart = () => {
+    setIsCartOpen(!isCartOpen);
+  };
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-sm border-b border-white/10">
