@@ -47,8 +47,27 @@ const Navigation = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    const query = searchQuery.toLowerCase().trim();
+    
+    // Handle page navigation based on search
+    if (query) {
+      if (query.includes('about')) {
+        navigate('/about');
+      } else if (query.includes('product')) {
+        navigate('/products');
+      } else if (query.includes('contact')) {
+        navigate('/contact');
+      } else if (query.includes('blog')) {
+        navigate('/blog');
+      } else if (query.includes('game')) {
+        navigate('/game');
+      } else {
+        // Default to product search if no page match
+        navigate(`/products?search=${encodeURIComponent(query)}`);
+      }
+      
+      // Clear search and close mobile menu
+      setSearchQuery('');
       if (isMobileMenuOpen) setIsMobileMenuOpen(false);
     }
   };
