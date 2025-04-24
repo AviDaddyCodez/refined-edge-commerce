@@ -103,49 +103,49 @@ const ProductsPage = () => {
   });
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative bg-deep-purple">
       <CustomCursor />
       <Navigation />
 
       {/* Background grid neon effect */}
-      <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+      <div className="absolute inset-0 z-0 opacity-5 pointer-events-none">
         <div className="grid-neon-lines w-full h-full"></div>
       </div>
       
       {/* Hero section */}
-      <section className="pt-32 pb-20 bg-deep-purple relative overflow-hidden">
+      <section className="pt-32 pb-20 relative overflow-hidden">
         <div className="container mx-auto px-6 relative z-10">
           <h1 
             ref={titleRef as React.RefObject<HTMLHeadingElement>}
-            className="text-4xl md:text-5xl lg:text-6xl font-satoshi font-bold opacity-0 text-center"
+            className="text-4xl md:text-5xl lg:text-6xl font-satoshi font-bold opacity-0 text-center bg-gradient-to-r from-electric-violet to-soft-purple bg-clip-text text-transparent"
           >
-            Our <span className="gradient-text">Products</span>
+            Our Products
           </h1>
           <p className="text-xl text-gray-300 mt-6 text-center max-w-2xl mx-auto">
             Discover our collection of premium products designed with aesthetics and functionality in mind.
           </p>
         </div>
         
-        {/* Background decorative elements */}
+        {/* Decorative elements */}
         <div className="absolute -bottom-16 -right-16 w-64 h-64 bg-electric-violet/30 rounded-full blur-3xl"></div>
         <div className="absolute -top-8 -left-8 w-32 h-32 bg-soft-purple/20 rounded-full blur-xl"></div>
       </section>
       
       {/* Products section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-deep-purple relative">
         <div className="container mx-auto px-6">
           {/* Filter controls */}
-          <div className="mb-12 flex flex-col space-y-6">
+          <div className="mb-12 flex flex-col space-y-6 glass-card p-6">
             {/* Categories */}
             <div className="flex flex-wrap gap-4">
               {categories.map((category) => (
                 <button
                   key={category}
                   onClick={() => handleCategoryChange(category)}
-                  className={`px-4 py-2 text-sm transition-colors ${
+                  className={`px-4 py-2 text-sm transition-all rounded-full ${
                     activeCategory === category
-                      ? "bg-charcoal text-white rounded-full"
-                      : "text-charcoal-light hover:text-charcoal"
+                      ? "bg-electric-violet text-white shadow-lg shadow-electric-violet/20"
+                      : "text-gray-300 hover:text-white hover:bg-white/5"
                   }`}
                 >
                   {category}
@@ -153,18 +153,18 @@ const ProductsPage = () => {
               ))}
             </div>
             
-            {/* Subcategories - only show if a category is selected */}
+            {/* Subcategories */}
             {activeCategory !== "All" && (
-              <div className="flex flex-wrap gap-3 border-t border-gray-200 pt-4">
+              <div className="flex flex-wrap gap-3 border-t border-white/10 pt-4">
                 {subcategories[activeCategory as keyof typeof subcategories]?.map((subcategory) => (
                   <button
                     key={subcategory}
                     onClick={() => setActiveSubcategory(subcategory)}
-                    className={`px-3 py-1.5 text-xs transition-colors border ${
+                    className={`px-3 py-1.5 text-xs transition-all border rounded-full ${
                       activeSubcategory === subcategory
-                        ? "border-charcoal bg-charcoal/5 text-charcoal"
-                        : "border-gray-200 text-gray-600 hover:border-gray-300"
-                    } rounded-full`}
+                        ? "border-electric-violet bg-electric-violet/10 text-electric-violet"
+                        : "border-white/10 text-gray-400 hover:border-white/20"
+                    }`}
                   >
                     {subcategory}
                   </button>
@@ -173,10 +173,10 @@ const ProductsPage = () => {
             )}
             
             {/* View controls */}
-            <div className="flex justify-between items-center border-t border-gray-200 pt-4">
-              <div className="flex items-center gap-2">
-                <Filter size={18} className="text-charcoal" />
-                <span className="text-sm font-medium text-charcoal">
+            <div className="flex justify-between items-center border-t border-white/10 pt-4">
+              <div className="flex items-center gap-2 text-white">
+                <Filter size={18} />
+                <span className="text-sm">
                   {filteredProducts.length} Products
                 </span>
               </div>
@@ -184,15 +184,15 @@ const ProductsPage = () => {
               <div className="flex gap-2">
                 <button 
                   onClick={() => setViewType("grid")} 
-                  className={`p-2 rounded-md ${viewType === 'grid' ? 'bg-gray-100' : ''}`}
+                  className={`p-2 rounded-md transition-all ${viewType === 'grid' ? 'bg-white/10 text-electric-violet' : 'text-white'}`}
                 >
-                  <Grid3X3 size={18} className="text-charcoal" />
+                  <Grid3X3 size={18} />
                 </button>
                 <button 
                   onClick={() => setViewType("list")} 
-                  className={`p-2 rounded-md ${viewType === 'list' ? 'bg-gray-100' : ''}`}
+                  className={`p-2 rounded-md transition-all ${viewType === 'list' ? 'bg-white/10 text-electric-violet' : 'text-white'}`}
                 >
-                  <List size={18} className="text-charcoal" />
+                  <List size={18} />
                 </button>
               </div>
             </div>
@@ -206,17 +206,17 @@ const ProductsPage = () => {
           }`}>
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
-                <div key={product.id} className={viewType === 'list' ? 'flex gap-6 border-b pb-6' : ''}>
+                <div key={product.id} className={viewType === 'list' ? 'glass-card flex gap-6 p-6' : ''}>
                   <ProductCard {...product} className={viewType === 'list' ? 'flex-grow max-w-xs' : ''} />
                   {viewType === 'list' && (
                     <div className="flex-grow">
                       <p className="text-xs text-gray-400 mb-1">{product.category} • {product.subcategory}</p>
-                      <h3 className="font-space text-lg mb-2 text-charcoal">{product.name}</h3>
-                      <p className="font-medium text-charcoal mb-4">{product.price}</p>
-                      <p className="text-gray-600 mb-4">
+                      <h3 className="font-space text-lg mb-2 text-white">{product.name}</h3>
+                      <p className="font-medium text-electric-violet mb-4">{product.price}</p>
+                      <p className="text-gray-300 mb-4">
                         Premium quality product with modern design and exceptional craftsmanship.
                       </p>
-                      <button className="bg-charcoal text-white px-4 py-2 rounded-md hover:bg-charcoal/90 transition-colors">
+                      <button className="bg-electric-violet text-white px-4 py-2 rounded-md hover:bg-electric-violet/90 transition-all">
                         View Details
                       </button>
                     </div>
@@ -224,8 +224,8 @@ const ProductsPage = () => {
                 </div>
               ))
             ) : (
-              <div className="col-span-full py-12 text-center">
-                <p className="text-lg text-gray-500">No products match your selection.</p>
+              <div className="col-span-full py-12 text-center text-gray-300">
+                <p className="text-lg">No products match your selection.</p>
               </div>
             )}
           </div>

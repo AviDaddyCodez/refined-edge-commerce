@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { ShoppingBag, Eye } from "lucide-react";
@@ -32,7 +33,7 @@ const ProductCard = ({ id, image, name, price, category, subcategory, className 
     <Link to={`/products/${id}`}>
       <div
         ref={cardRef as React.RefObject<HTMLDivElement>}
-        className={`opacity-0 group cursor-pointer bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10 transition-all duration-300 hover:shadow-lg hover:shadow-electric-violet/20 ${className}`}
+        className={`opacity-0 group cursor-pointer glass-card transition-all duration-300 hover:shadow-lg hover:shadow-electric-violet/20 ${className}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -70,9 +71,11 @@ const ProductCard = ({ id, image, name, price, category, subcategory, className 
           </div>
         </div>
         
-        <p className="text-xs text-gray-400 mb-1">{category} {subcategory ? `• ${subcategory}` : ''}</p>
-        <h3 className="font-space text-lg mb-1 text-white group-hover:text-electric-violet transition-colors">{name}</h3>
-        <p className="font-medium text-electric-violet">{price}</p>
+        <div className="p-4">
+          <p className="text-xs text-gray-400 mb-1">{category} {subcategory ? `• ${subcategory}` : ''}</p>
+          <h3 className="font-space text-lg mb-1 text-white group-hover:text-electric-violet transition-colors">{name}</h3>
+          <p className="font-medium text-electric-violet">{price}</p>
+        </div>
       </div>
     </Link>
   );
