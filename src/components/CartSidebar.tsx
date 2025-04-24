@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useCart } from "@/context/CartContext";
 import { X, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
@@ -119,12 +118,14 @@ const CartSidebar = () => {
                 >
                   Continue Shopping
                 </Button>
-                <Button 
-                  className="flex-1 bg-electric-violet hover:bg-electric-violet/90"
-                  onClick={handleCheckout}
-                >
-                  Checkout
-                </Button>
+                <Link to="/checkout">
+                  <Button 
+                    className="flex-1 bg-electric-violet hover:bg-electric-violet/90"
+                    onClick={() => setIsCartOpen(false)}
+                  >
+                    Checkout
+                  </Button>
+                </Link>
               </div>
             </div>
           )}

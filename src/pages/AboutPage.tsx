@@ -2,6 +2,7 @@
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import Navigation from "@/components/Navigation";
 import CustomCursor from "@/components/CustomCursor";
+import NeonGridLines from "@/components/NeonGridLines";
 
 const AboutPage = () => {
   const titleRef = useScrollAnimation();
@@ -17,12 +18,13 @@ const AboutPage = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-deep-purple relative">
+      <NeonGridLines className="fixed inset-0" opacity={0.15} />
       <CustomCursor />
       <Navigation />
       
       {/* Hero section */}
-      <section className="pt-32 pb-20 bg-deep-purple">
+      <section className="pt-32 pb-20 relative">
         <div className="container mx-auto px-6">
           <h1 
             ref={titleRef as React.RefObject<HTMLHeadingElement>}
@@ -37,23 +39,23 @@ const AboutPage = () => {
       </section>
       
       {/* Company story */}
-      <section className="py-24 bg-white">
+      <section className="py-24 glass-card backdrop-blur-sm relative">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div
               ref={contentRef as React.RefObject<HTMLDivElement>}
               className="space-y-6 opacity-0"
             >
-              <h2 className="text-3xl md:text-4xl font-satoshi font-bold text-charcoal">
+              <h2 className="text-3xl md:text-4xl font-satoshi font-bold text-white">
                 Our Story
               </h2>
-              <p className="text-lg text-charcoal-light">
+              <p className="text-lg text-gray-300">
                 Founded in 2015, HOOPS started with a simple mission: to create basketball products that combine cutting-edge technology with sleek design. What began as a small passion project has grown into a global brand trusted by athletes and enthusiasts alike.
               </p>
-              <p className="text-charcoal-light">
+              <p className="text-gray-300">
                 We believe that basketball is more than just a game—it's a culture, a community, and a way of life. Our products are designed to enhance the experience of the game while bringing style and innovation to the court.
               </p>
-              <p className="text-charcoal-light">
+              <p className="text-gray-300">
                 Each product in our collection is meticulously crafted with premium materials and undergoes rigorous testing to ensure it meets our high standards of quality and performance.
               </p>
             </div>
@@ -61,11 +63,11 @@ const AboutPage = () => {
               ref={imageRef as React.RefObject<HTMLDivElement>}
               className="opacity-0"
             >
-              <div className="rounded-xl overflow-hidden">
+              <div className="rounded-xl overflow-hidden border border-white/10">
                 <img 
                   src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000" 
                   alt="Our team" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover hover-scale"
                 />
               </div>
             </div>
@@ -78,7 +80,7 @@ const AboutPage = () => {
           >
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               {stats.map((stat, index) => (
-                <div key={index} className="p-6 glass-card bg-deep-purple rounded-xl">
+                <div key={index} className="p-6 glass-card bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
                   <p className="text-3xl md:text-4xl font-satoshi font-bold gradient-text">
                     {stat.value}
                   </p>
