@@ -1,4 +1,3 @@
-
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const About = () => {
@@ -8,7 +7,7 @@ const About = () => {
   const statsRef = useScrollAnimation({ delay: 200 });
 
   return (
-    <section id="about" className="section-padding bg-beige relative overflow-hidden">
+    <section id="about" className="section-padding bg-deep-purple relative overflow-hidden">
       {/* Background grid neon effect */}
       <div className="absolute inset-0 z-0 opacity-5 pointer-events-none">
         <div className="grid-neon-lines w-full h-full"></div>
@@ -22,7 +21,7 @@ const About = () => {
             </div>
             <h2
               ref={titleRef as React.RefObject<HTMLHeadingElement>}
-              className="text-3xl md:text-4xl lg:text-5xl mb-6 opacity-0 relative"
+              className="text-3xl md:text-4xl lg:text-5xl mb-6 opacity-0 text-white relative"
             >
               Crafted with intention, 
               <br />
@@ -35,7 +34,7 @@ const About = () => {
             </h2>
             <div
               ref={textRef as React.RefObject<HTMLDivElement>}
-              className="space-y-4 opacity-0"
+              className="space-y-4 opacity-0 text-gray-300"
             >
               <p className="text-lg">
                 LUMA was born from a desire to create products that merge functionality with aesthetic beauty.
@@ -52,10 +51,10 @@ const About = () => {
               </p>
               
               <div className="pt-6 flex flex-wrap gap-4">
-                <button className="bg-charcoal hover:bg-charcoal/90 text-white px-5 py-2.5 rounded-md transition-all">
+                <button className="bg-electric-violet hover:bg-electric-violet/90 text-white px-5 py-2.5 rounded-md transition-all shadow-lg hover:shadow-electric-violet/50">
                   Learn More
                 </button>
-                <button className="border border-charcoal/30 hover:border-charcoal/60 text-charcoal px-5 py-2.5 rounded-md transition-all">
+                <button className="border border-white/20 hover:border-electric-violet text-white px-5 py-2.5 rounded-md transition-all hover:bg-white/5">
                   Our Process
                 </button>
               </div>
@@ -92,9 +91,9 @@ const About = () => {
               { number: "12", label: "Countries" },
               { number: "10K+", label: "Happy customers" }
             ].map((stat, index) => (
-              <div key={index} className="glass-card bg-white/40 backdrop-blur-sm p-6 rounded-xl">
-                <p className="text-3xl md:text-4xl font-satoshi font-bold text-charcoal mb-1">{stat.number}</p>
-                <p className="text-charcoal-light">{stat.label}</p>
+              <div key={index} className="glass-card bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10 hover:border-electric-violet/50 transition-colors">
+                <p className="text-3xl md:text-4xl font-satoshi font-bold text-white mb-1">{stat.number}</p>
+                <p className="text-gray-300">{stat.label}</p>
               </div>
             ))}
           </div>
