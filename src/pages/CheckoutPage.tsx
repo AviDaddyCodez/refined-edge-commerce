@@ -10,11 +10,12 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { CreditCard, ChevronRight, Truck, ShieldCheck, ArrowLeft } from "lucide-react";
+import { CreditCard, ChevronRight, Truck, ShieldCheck, ArrowLeft, Smartphone, Wallet } from "lucide-react";
 import NeonGridLines from "@/components/NeonGridLines";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAudioEffect } from "@/hooks/useAudioEffect";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -24,10 +25,14 @@ const formSchema = z.object({
   city: z.string().min(2, "City must be at least 2 characters"),
   state: z.string().min(2, "State must be at least 2 characters"),
   zipCode: z.string().min(5, "ZIP code must be at least 5 characters"),
-  cardNumber: z.string().min(16, "Card number must be at least 16 digits"),
-  cardName: z.string().min(2, "Name on card must be at least 2 characters"),
-  expDate: z.string().regex(/^(0[1-9]|1[0-2])\/\d{2}$/, "Please use MM/YY format"),
-  cvv: z.string().min(3, "CVV must be at least 3 digits"),
+  paymentMethod: z.enum(["card", "upi"]),
+  // Card fields
+  cardNumber: z.string().optional(),
+  cardName: z.string().optional(),
+  expDate: z.string().optional(),
+  cvv: z.string().optional(),
+  // UPI fields
+  upiId: z.string().optional(),
 });
 
 const CheckoutPage = () => {
@@ -35,6 +40,7 @@ const CheckoutPage = () => {
   const { cart, cartTotal, clearCart, getItemTotal } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "upi">("card");
   const { playSound } = useAudioEffect();
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -47,16 +53,19 @@ const CheckoutPage = () => {
       city: "",
       state: "",
       zipCode: "",
+      paymentMethod: "card",
       cardNumber: "",
       cardName: "",
       expDate: "",
       cvv: "",
+      upiId: "",
     },
   });
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     if (cart.length === 0) {
       toast.error("Your cart is empty");
+      playSound("error");
       return;
     }
 
@@ -90,6 +99,12 @@ const CheckoutPage = () => {
     playSound("click");
     setCurrentStep(prev => prev - 1);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handlePaymentMethodChange = (value: string) => {
+    setPaymentMethod(value as "card" | "upi");
+    form.setValue("paymentMethod", value as "card" | "upi");
+    playSound("click");
   };
 
   return (
@@ -278,82 +293,171 @@ const CheckoutPage = () => {
                       className="glass-card p-6 rounded-xl border border-white/10 backdrop-blur-md"
                     >
                       <h2 className="text-xl font-bold mb-6 text-white">Payment Information</h2>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="cardNumber"
-                          render={({ field }) => (
-                            <FormItem className="md:col-span-2">
-                              <FormLabel className="text-white">Card Number</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <Input 
-                                    placeholder="1234 5678 9012 3456" 
-                                    className="bg-white/10 border-white/20 text-white pl-10" 
-                                    {...field} 
-                                  />
-                                  <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70" size={16} />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="cardName"
-                          render={({ field }) => (
-                            <FormItem className="md:col-span-2">
-                              <FormLabel className="text-white">Name on Card</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  placeholder="John Doe" 
-                                  className="bg-white/10 border-white/20 text-white" 
-                                  {...field} 
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="expDate"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white">Expiration Date</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  placeholder="MM/YY" 
-                                  className="bg-white/10 border-white/20 text-white" 
-                                  {...field} 
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="cvv"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white">CVV</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  placeholder="123" 
-                                  type="password" 
-                                  className="bg-white/10 border-white/20 text-white" 
-                                  {...field} 
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                      
+                      <div className="mb-6">
+                        <Tabs defaultValue="card" onValueChange={handlePaymentMethodChange}>
+                          <TabsList className="w-full grid grid-cols-2 mb-6 bg-white/10">
+                            <TabsTrigger value="card" className="data-[state=active]:bg-electric-violet data-[state=active]:text-white">
+                              <div className="flex items-center gap-2">
+                                <CreditCard size={18} />
+                                <span>Credit Card</span>
+                              </div>
+                            </TabsTrigger>
+                            <TabsTrigger value="upi" className="data-[state=active]:bg-electric-violet data-[state=active]:text-white">
+                              <div className="flex items-center gap-2">
+                                <Smartphone size={18} />
+                                <span>UPI</span>
+                              </div>
+                            </TabsTrigger>
+                          </TabsList>
+                          
+                          <TabsContent value="card">
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="cardNumber"
+                                render={({ field }) => (
+                                  <FormItem className="md:col-span-2">
+                                    <FormLabel className="text-white">Card Number</FormLabel>
+                                    <FormControl>
+                                      <div className="relative">
+                                        <Input 
+                                          placeholder="1234 5678 9012 3456" 
+                                          className="bg-white/10 border-white/20 text-white pl-10" 
+                                          {...field} 
+                                        />
+                                        <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70" size={16} />
+                                      </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="cardName"
+                                render={({ field }) => (
+                                  <FormItem className="md:col-span-2">
+                                    <FormLabel className="text-white">Name on Card</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="John Doe" 
+                                        className="bg-white/10 border-white/20 text-white" 
+                                        {...field} 
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="expDate"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white">Expiration Date</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="MM/YY" 
+                                        className="bg-white/10 border-white/20 text-white" 
+                                        {...field} 
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="cvv"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white">CVV</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="123" 
+                                        type="password" 
+                                        className="bg-white/10 border-white/20 text-white" 
+                                        {...field} 
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </TabsContent>
+                          
+                          <TabsContent value="upi">
+                            <div className="space-y-6">
+                              <FormField
+                                control={form.control}
+                                name="upiId"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-white">UPI ID</FormLabel>
+                                    <FormControl>
+                                      <div className="relative">
+                                        <Input 
+                                          placeholder="yourname@upi" 
+                                          className="bg-white/10 border-white/20 text-white pl-10" 
+                                          {...field} 
+                                        />
+                                        <Wallet className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70" size={16} />
+                                      </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <div className="grid grid-cols-3 gap-4 py-4">
+                                <button 
+                                  type="button" 
+                                  onClick={() => {
+                                    form.setValue("upiId", form.getValues("upiId") + "@googlep");
+                                    playSound("click");
+                                  }} 
+                                  className="bg-white/10 hover:bg-white/20 p-4 rounded-lg flex flex-col items-center justify-center gap-2 transition-colors"
+                                >
+                                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png" alt="Google Pay" className="w-8 h-8" />
+                                  <span className="text-sm text-white">Google Pay</span>
+                                </button>
+                                
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    form.setValue("upiId", form.getValues("upiId") + "@okbhim");
+                                    playSound("click");
+                                  }}
+                                  className="bg-white/10 hover:bg-white/20 p-4 rounded-lg flex flex-col items-center justify-center gap-2 transition-colors"
+                                >
+                                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo-vector.svg/1280px-UPI-Logo-vector.svg.png" alt="BHIM UPI" className="w-8 h-8" />
+                                  <span className="text-sm text-white">BHIM UPI</span>
+                                </button>
+                                
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    form.setValue("upiId", form.getValues("upiId") + "@apl");
+                                    playSound("click");
+                                  }} 
+                                  className="bg-white/10 hover:bg-white/20 p-4 rounded-lg flex flex-col items-center justify-center gap-2 transition-colors"
+                                >
+                                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Amazon_logo_RGB.svg/2560px-Amazon_logo_RGB.svg.png" alt="Amazon Pay" className="w-8 h-8" />
+                                  <span className="text-sm text-white">Amazon Pay</span>
+                                </button>
+                              </div>
+                              
+                              <div className="text-sm text-white/70">
+                                <p>By selecting UPI, you agree to pay using your linked UPI ID. A payment request will be sent to your UPI app.</p>
+                              </div>
+                            </div>
+                          </TabsContent>
+                        </Tabs>
                       </div>
                       
                       <div className="mt-6 space-y-4 text-white">

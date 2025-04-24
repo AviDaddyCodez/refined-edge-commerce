@@ -1,8 +1,8 @@
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // Define sound types
-type SoundType = "click" | "success" | "error" | "add-to-cart";
+export type SoundType = "click" | "success" | "error" | "add-to-cart";
 
 // Sound URLs
 const soundEffects: Record<SoundType, string> = {
@@ -22,14 +22,24 @@ export const useAudioEffect = () => {
     "add-to-cart": null,
   });
   
+  const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
+  
   // Initialize audio elements on mount
   useEffect(() => {
     // Preload all sound effects
     Object.entries(soundEffects).forEach(([key, url]) => {
-      const audio = new Audio(url);
-      audio.preload = "auto";
-      audio.volume = 0.5; // Set default volume
-      audioRefs.current[key as SoundType] = audio;
+      try {
+        const audio = new Audio();
+        audio.src = url;
+        audio.preload = "auto";
+        audio.volume = 0.5; // Set default volume
+        audioRefs.current[key as SoundType] = audio;
+        
+        // Test if audio can be played
+        audio.load();
+      } catch (error) {
+        console.error(`Error loading sound ${key}:`, error);
+      }
     });
     
     // Cleanup on unmount
@@ -45,6 +55,8 @@ export const useAudioEffect = () => {
   
   // Function to play a sound
   const playSound = useCallback((type: SoundType) => {
+    if (!audioEnabled) return;
+    
     const audio = audioRefs.current[type];
     if (audio) {
       // Reset the audio to start
@@ -56,7 +68,11 @@ export const useAudioEffect = () => {
         console.error("Error playing sound:", error);
       });
     }
+  }, [audioEnabled]);
+  
+  const toggleAudio = useCallback(() => {
+    setAudioEnabled(prev => !prev);
   }, []);
   
-  return { playSound };
+  return { playSound, audioEnabled, toggleAudio };
 };
