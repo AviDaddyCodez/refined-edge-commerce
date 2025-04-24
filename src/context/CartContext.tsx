@@ -20,6 +20,7 @@ interface CartContextType {
   cartCount: number;
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
+  getItemTotal: (item: CartItem) => string;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -53,6 +54,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
+
+  // Helper function to calculate the price of an individual item based on quantity
+  const getItemTotal = (item: CartItem): string => {
+    const price = parseFloat(item.price.replace(/[^\d.]/g, ''));
+    return (price * item.quantity).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  };
 
   const addToCart = (product: Omit<CartItem, 'quantity'>) => {
     setCart(currentCart => {
@@ -109,6 +116,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     cartCount,
     isCartOpen,
     setIsCartOpen,
+    getItemTotal,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

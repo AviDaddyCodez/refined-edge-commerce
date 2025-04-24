@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useCart } from "@/context/CartContext";
 import { X, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
@@ -13,7 +14,8 @@ const CartSidebar = () => {
     updateQuantity, 
     removeFromCart, 
     cartTotal, 
-    clearCart 
+    clearCart,
+    getItemTotal
   } = useCart();
   
   const handleCheckout = () => {
@@ -94,7 +96,7 @@ const CartSidebar = () => {
                             <Plus className="h-3 w-3" />
                           </button>
                         </div>
-                        <p className="font-medium">{item.price}</p>
+                        <p className="font-medium">{getItemTotal(item)}</p>
                       </div>
                     </div>
                   </li>
