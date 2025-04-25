@@ -6,8 +6,10 @@ import CustomCursor from "@/components/CustomCursor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const ContactPage = () => {
   const titleRef = useScrollAnimation();
@@ -19,31 +21,55 @@ const ContactPage = () => {
     email: "",
     message: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Message sent successfully! We'll get back to you soon.");
-    setFormData({ name: "", email: "", message: "" });
+    setIsSubmitting(true);
+    
+    try {
+      // Store the submission in the database
+      const { error: dbError } = await supabase
+        .from('contact_submissions')
+        .insert([formData]);
+
+      if (dbError) throw dbError;
+
+      // Send confirmation email
+      const response = await supabase.functions.invoke('send-contact-email', {
+        body: formData
+      });
+
+      if (response.error) throw response.error;
+
+      toast.success("Message sent successfully! We'll get back to you soon.");
+      setFormData({ name: "", email: "", message: "" });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error("There was an error sending your message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-deep-purple">
       <CustomCursor />
       <Navigation />
       
       {/* Hero section */}
-      <section className="pt-32 pb-20 bg-deep-purple">
+      <section className="pt-32 pb-20">
         <div className="container mx-auto px-6">
           <h1 
             ref={titleRef as React.RefObject<HTMLHeadingElement>}
             className="text-4xl md:text-5xl lg:text-6xl font-satoshi font-bold opacity-0 text-center"
           >
-            Contact <span className="gradient-text">Us</span>
+            Get in <span className="gradient-text">Touch</span>
           </h1>
           <p className="text-xl text-gray-300 mt-6 text-center max-w-2xl mx-auto">
             Have questions or feedback? We'd love to hear from you.
@@ -52,14 +78,14 @@ const ContactPage = () => {
       </section>
       
       {/* Contact form */}
-      <section className="py-24 bg-white">
+      <section className="py-24">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-16">
             <div
               ref={formRef as React.RefObject<HTMLDivElement>}
-              className="opacity-0"
+              className="opacity-0 glass-card p-8"
             >
-              <h2 className="text-2xl md:text-3xl font-satoshi font-bold text-charcoal mb-6">
+              <h2 className="text-2xl md:text-3xl font-satoshi font-bold mb-6">
                 Send us a message
               </h2>
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -72,7 +98,7 @@ const ContactPage = () => {
                     onChange={handleChange}
                     placeholder="John Doe"
                     required
-                    className="bg-gray-50"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/50"
                   />
                 </div>
                 <div className="space-y-2">
@@ -85,12 +111,12 @@ const ContactPage = () => {
                     onChange={handleChange}
                     placeholder="john@example.com"
                     required
-                    className="bg-gray-50"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/50"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="message">Message</Label>
-                  <textarea
+                  <Textarea
                     id="message"
                     name="message"
                     value={formData.message}
@@ -98,14 +124,15 @@ const ContactPage = () => {
                     rows={5}
                     placeholder="Your message here..."
                     required
-                    className="w-full rounded-md border border-input bg-gray-50 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/50"
                   />
                 </div>
                 <Button 
                   type="submit" 
                   className="w-full py-6 bg-electric-violet hover:bg-electric-violet/90"
+                  disabled={isSubmitting}
                 >
-                  Send Message
+                  {isSubmitting ? "Sending..." : "Send Message"}
                 </Button>
               </form>
             </div>
@@ -114,50 +141,50 @@ const ContactPage = () => {
               ref={infoRef as React.RefObject<HTMLDivElement>}
               className="opacity-0 space-y-8"
             >
-              <h2 className="text-2xl md:text-3xl font-satoshi font-bold text-charcoal mb-6">
+              <h2 className="text-2xl md:text-3xl font-satoshi font-bold mb-6">
                 Contact Information
               </h2>
               
               <div className="space-y-6">
-                <div className="flex items-start">
+                <div className="flex items-start glass-card p-6">
                   <div className="mr-4 rounded-full bg-electric-violet/10 p-3">
                     <Mail className="h-6 w-6 text-electric-violet" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-charcoal">Email</h3>
-                    <p className="mt-1 text-charcoal-light">info@hoops.com</p>
-                    <p className="text-charcoal-light">support@hoops.com</p>
+                    <h3 className="font-medium">Email</h3>
+                    <p className="mt-1 text-gray-300">info@hoops.com</p>
+                    <p className="text-gray-300">support@hoops.com</p>
                   </div>
                 </div>
                 
-                <div className="flex items-start">
+                <div className="flex items-start glass-card p-6">
                   <div className="mr-4 rounded-full bg-electric-violet/10 p-3">
                     <Phone className="h-6 w-6 text-electric-violet" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-charcoal">Phone</h3>
-                    <p className="mt-1 text-charcoal-light">+1 (555) 123-4567</p>
-                    <p className="text-charcoal-light">+1 (555) 765-4321</p>
+                    <h3 className="font-medium">Phone</h3>
+                    <p className="mt-1 text-gray-300">+1 (555) 123-4567</p>
+                    <p className="text-gray-300">+1 (555) 765-4321</p>
                   </div>
                 </div>
                 
-                <div className="flex items-start">
+                <div className="flex items-start glass-card p-6">
                   <div className="mr-4 rounded-full bg-electric-violet/10 p-3">
                     <MapPin className="h-6 w-6 text-electric-violet" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-charcoal">Address</h3>
-                    <p className="mt-1 text-charcoal-light">123 Basketball Court</p>
-                    <p className="text-charcoal-light">Los Angeles, CA 90001</p>
+                    <h3 className="font-medium">Address</h3>
+                    <p className="mt-1 text-gray-300">123 Basketball Court</p>
+                    <p className="text-gray-300">Los Angeles, CA 90001</p>
                   </div>
                 </div>
               </div>
               
-              <div className="pt-8 mt-8 border-t border-gray-200">
-                <h3 className="font-medium text-charcoal mb-4">Working Hours</h3>
-                <p className="text-charcoal-light">Monday - Friday: 9:00 AM - 6:00 PM</p>
-                <p className="text-charcoal-light">Saturday: 10:00 AM - 4:00 PM</p>
-                <p className="text-charcoal-light">Sunday: Closed</p>
+              <div className="glass-card p-6 mt-8">
+                <h3 className="font-medium mb-4">Working Hours</h3>
+                <p className="text-gray-300">Monday - Friday: 9:00 AM - 6:00 PM</p>
+                <p className="text-gray-300">Saturday: 10:00 AM - 4:00 PM</p>
+                <p className="text-gray-300">Sunday: Closed</p>
               </div>
             </div>
           </div>
