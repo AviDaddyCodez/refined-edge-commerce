@@ -1,10 +1,10 @@
-
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import Navigation from "@/components/Navigation";
 import CustomCursor from "@/components/CustomCursor";
 import NeonGridLines from "@/components/NeonGridLines";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
+import { Square3Stack3DIcon, RocketLaunchIcon, HeartIcon, SparklesIcon } from '@heroicons/react/24/outline';
 
 const AboutPage = () => {
   const titleRef = useScrollAnimation();
@@ -12,6 +12,17 @@ const AboutPage = () => {
   const imageRef = useScrollAnimation({ delay: 300 });
   const statsRef = useScrollAnimation({ delay: 400 });
   const [activeTeamMember, setActiveTeamMember] = useState<number | null>(null);
+  const { scrollYProgress } = useScroll();
+  
+  const values = [
+    { icon: <Square3Stack3DIcon className="w-6 h-6" />, title: "Innovation", description: "Pushing boundaries in eco-friendly lighting" },
+    { icon: <RocketLaunchIcon className="w-6 h-6" />, title: "Quality", description: "Uncompromising attention to detail" },
+    { icon: <HeartIcon className="w-6 h-6" />, title: "Sustainability", description: "Committed to environmental responsibility" },
+    { icon: <SparklesIcon className="w-6 h-6" />, title: "Design", description: "Where aesthetics meet functionality" },
+  ];
+
+  const rotate = useTransform(scrollYProgress, [0, 1], [0, 360]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 1.2]);
 
   const stats = [
     { value: "2015", label: "Founded" },
@@ -42,28 +53,50 @@ const AboutPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-deep-purple relative">
+    <div className="min-h-screen bg-deep-purple relative overflow-hidden">
       <NeonGridLines className="fixed inset-0" opacity={0.15} />
       <CustomCursor />
       <Navigation />
       
-      {/* Hero section */}
+      {/* Hero section with floating elements */}
       <section className="pt-32 pb-20 relative">
+        <motion.div 
+          className="absolute top-20 right-20 w-32 h-32 rounded-full bg-gradient-to-r from-electric-violet to-soft-purple opacity-20"
+          animate={{ y: [0, 20, 0] }}
+          transition={{ duration: 4, repeat: Infinity }}
+        />
+        
         <div className="container mx-auto px-6">
           <motion.h1 
             ref={titleRef as React.RefObject<HTMLHeadingElement>}
-            className="text-4xl md:text-5xl lg:text-6xl font-satoshi font-bold opacity-0 text-center"
+            className="text-4xl md:text-6xl lg:text-7xl font-satoshi font-bold opacity-0 text-center"
             whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 300 }}
           >
             About <span className="gradient-text">Us</span>
           </motion.h1>
-          <p className="text-xl text-gray-300 mt-6 text-center max-w-2xl mx-auto">
-            Innovating at the intersection of technology and design.
-          </p>
+          
+          {/* Interactive Values Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20">
+            {values.map((value, index) => (
+              <motion.div
+                key={value.title}
+                className="glass-card p-6 text-center"
+                whileHover={{ scale: 1.05, rotate: 5 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <div className="mb-4 flex justify-center">
+                  {value.icon}
+                </div>
+                <h3 className="text-lg font-bold mb-2">{value.title}</h3>
+                <p className="text-sm text-gray-300">{value.description}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
-      
+
       {/* Interactive Timeline */}
       <section className="py-24 relative overflow-hidden">
         <div className="container mx-auto px-6">
@@ -113,7 +146,7 @@ const AboutPage = () => {
             </div>
           </div>
           
-          {/* Interactive Team Section */}
+          {/* Interactive Team Section with 3D cards */}
           <div className="mt-32">
             <h2 className="text-3xl md:text-4xl font-satoshi font-bold text-white text-center mb-12">
               Meet Our Team
@@ -122,20 +155,20 @@ const AboutPage = () => {
               {teamMembers.map((member, index) => (
                 <motion.div
                   key={member.name}
-                  className="relative group"
+                  className="relative group perspective"
                   onHoverStart={() => setActiveTeamMember(index)}
                   onHoverEnd={() => setActiveTeamMember(null)}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.05, rotateY: 15 }}
                 >
-                  <div className="rounded-xl overflow-hidden">
+                  <div className="rounded-xl overflow-hidden transform-gpu transition-all duration-500">
                     <img 
                       src={member.image} 
-                      alt={member.name} 
+                      alt="Team member"
                       className="w-full h-64 object-cover"
                     />
                   </div>
                   <motion.div 
-                    className="absolute inset-0 bg-black/60 flex flex-col justify-end p-6 rounded-xl"
+                    className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6 rounded-xl"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: activeTeamMember === index ? 1 : 0 }}
                   >
@@ -148,20 +181,24 @@ const AboutPage = () => {
             </div>
           </div>
           
-          {/* Stats with hover effects */}
+          {/* Animated Stats */}
           <div
             ref={statsRef as React.RefObject<HTMLDivElement>}
             className="mt-24 opacity-0"
           >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {stats.map((stat, index) => (
                 <motion.div 
-                  key={index} 
-                  className="p-6 glass-card bg-white/5 backdrop-blur-sm rounded-xl border border-white/10"
+                  key={index}
+                  className="p-6 glass-card backdrop-blur-sm rounded-xl border border-white/10"
                   whileHover={{ 
                     scale: 1.05,
                     borderColor: "rgba(139, 92, 246, 0.5)"
                   }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
                 >
                   <motion.p 
                     className="text-3xl md:text-4xl font-satoshi font-bold gradient-text"

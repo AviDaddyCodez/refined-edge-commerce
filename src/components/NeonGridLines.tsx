@@ -11,15 +11,31 @@ const NeonGridLines: React.FC<NeonGridLinesProps> = ({ opacity = 0.1, className 
     <div className={`absolute inset-0 z-0 pointer-events-none ${className}`} style={{ opacity }}>
       <div className="w-full h-full">
         {/* Vertical lines */}
-        <div className="absolute inset-0 grid grid-cols-6 gap-4">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div key={`v-${i}`} className="w-px h-full bg-gradient-to-b from-electric-violet via-soft-purple to-transparent"></div>
+        <div className="absolute inset-0">
+          {Array.from({ length: 24 }).map((_, i) => (
+            <div 
+              key={`v-${i}`} 
+              className="absolute h-full w-px"
+              style={{
+                left: `${(i / 23) * 100}%`,
+                background: 'linear-gradient(to bottom, rgba(139, 92, 246, 0.3), rgba(139, 92, 246, 0.05))',
+                boxShadow: '0 0 15px rgba(139, 92, 246, 0.1)'
+              }}
+            />
           ))}
         </div>
         {/* Horizontal lines */}
-        <div className="absolute inset-0 grid grid-rows-6 gap-4">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div key={`h-${i}`} className="w-full h-px bg-gradient-to-r from-electric-violet via-soft-purple to-transparent"></div>
+        <div className="absolute inset-0">
+          {Array.from({ length: 24 }).map((_, i) => (
+            <div 
+              key={`h-${i}`} 
+              className="absolute w-full h-px"
+              style={{
+                top: `${(i / 23) * 100}%`,
+                background: 'linear-gradient(to right, rgba(139, 92, 246, 0.3), rgba(139, 92, 246, 0.05))',
+                boxShadow: '0 0 15px rgba(139, 92, 246, 0.1)'
+              }}
+            />
           ))}
         </div>
       </div>

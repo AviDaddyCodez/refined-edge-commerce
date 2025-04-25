@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -77,7 +76,6 @@ const MemoryCard = () => {
       setMoves(m => m + 1);
       const [firstCard] = flippedCards;
       
-      // Check for match
       if (cards[firstCard].icon === cards[id].icon) {
         newCards[firstCard].isMatched = true;
         newCards[id].isMatched = true;
@@ -85,7 +83,6 @@ const MemoryCard = () => {
         setFlippedCards([]);
         setMatches(m => m + 1);
         
-        // Toast for match
         toast.success("Match found!", {
           position: "bottom-center",
         });
@@ -94,7 +91,6 @@ const MemoryCard = () => {
           handleGameComplete(moves + 1);
         }
       } else {
-        // No match, flip back after delay
         setTimeout(() => {
           newCards[firstCard].isFlipped = false;
           newCards[id].isFlipped = false;
@@ -110,25 +106,38 @@ const MemoryCard = () => {
     const score = Math.max(100 - (finalMoves - ICONS.length) * 5, 0);
     setLastScore(score);
     
+    const qualifiesForDiscount = finalMoves < 15;
+    
     try {
-      // Anonymous insert without user_id for now
       const { error } = await supabase
         .from('game_scores')
         .insert([{ 
           score, 
           game_type: 'memory',
-          // user_id is omitted for anonymous play
         }]);
         
       if (error) {
         console.error("Error saving score:", error);
         toast.error("Game complete! Score: " + score + " (Score not saved - login to save scores)");
       } else {
-        toast.success(`Game Complete! Score: ${score}`, {
-          duration: 5000,
-          position: "top-center",
-        });
-        // Refresh high scores
+        if (qualifiesForDiscount) {
+          localStorage.setItem('gameDiscount', 'ECOMEM15');
+          toast.success(
+            <div className="space-y-2">
+              <p>🎉 Congratulations! You've won a 15% discount!</p>
+              <p className="text-sm">Use code: ECOMEM15 at checkout</p>
+            </div>,
+            {
+              duration: 10000,
+              position: "top-center",
+            }
+          );
+        } else {
+          toast.success(`Game Complete! Score: ${score}`, {
+            duration: 5000,
+            position: "top-center",
+          });
+        }
         fetchHighScores();
       }
     } catch (error) {
@@ -187,7 +196,6 @@ const MemoryCard = () => {
         )}
       </div>
       
-      {/* Game Grid */}
       <div className="grid grid-cols-4 gap-4">
         {cards.map((card) => (
           <motion.div
@@ -219,7 +227,6 @@ const MemoryCard = () => {
         ))}
       </div>
       
-      {/* High Scores Section */}
       {highScores.length > 0 && (
         <div className="mt-10">
           <h3 className="text-xl font-bold mb-4 text-center gradient-text">Top Scores</h3>
