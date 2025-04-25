@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import Navigation from "@/components/Navigation";
@@ -48,6 +47,10 @@ const ContactPage = () => {
       if (response.error) throw response.error;
 
       toast.success("Message sent successfully! We'll get back to you soon.");
+      
+      // Display a notification about the email testing mode
+      toast.info("Note: During testing, confirmation emails are sent to our team inbox rather than directly to you.");
+      
       setFormData({ name: "", email: "", message: "" });
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -134,6 +137,9 @@ const ContactPage = () => {
                 >
                   {isSubmitting ? "Sending..." : "Send Message"}
                 </Button>
+                <p className="text-sm text-gray-400 text-center mt-2">
+                  Note: During testing, confirmation emails are sent to our team inbox.
+                </p>
               </form>
             </div>
             

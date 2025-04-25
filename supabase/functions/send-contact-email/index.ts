@@ -15,6 +15,9 @@ interface ContactEmailRequest {
   message: string;
 }
 
+// The verified email address for testing
+const VERIFIED_EMAIL = "avnindrachaudhary71@gmail.com";
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -24,14 +27,16 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { name, email, message }: ContactEmailRequest = await req.json();
 
-    // Send confirmation email to the user
+    // In development/testing, always send to the verified email
+    // but include original email in the content for reference
     const emailResponse = await resend.emails.send({
       from: "Hoops <onboarding@resend.dev>",
-      to: [email],
+      to: [VERIFIED_EMAIL], // Always send to verified email during testing
       subject: "We received your message!",
       html: `
         <h1>Thank you for contacting us, ${name}!</h1>
         <p>We have received your message and will get back to you as soon as possible.</p>
+        <p><strong>Original recipient:</strong> ${email}</p>
         <p>Your message:</p>
         <blockquote>${message}</blockquote>
         <p>Best regards,<br>The Hoops Team</p>
