@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Trophy, RefreshCw, Star } from "lucide-react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import GameStats from './GameStats';
+import GameCard from './GameCard';
+import GameCompleted from './GameCompleted';
+import HighScoresTable from './HighScoresTable';
 
 interface CardType {
   id: number;
@@ -146,120 +146,40 @@ const MemoryCard = () => {
     }
   };
 
-  const cardVariants = {
-    flipped: { rotateY: 180, scale: 1.05 },
-    unflipped: { rotateY: 0, scale: 1 }
-  };
-
   return (
     <div className="max-w-4xl mx-auto p-4">
       <div className="text-center mb-6">
         <h2 className="text-3xl font-bold mb-4 gradient-text">Eco Memory Challenge</h2>
         
-        <div className="flex justify-center items-center gap-6 mb-6">
-          <div className="glass-card p-4 flex flex-col items-center min-w-[100px]">
-            <div className="text-sm text-green-400 mb-1">Moves</div>
-            <div className="text-2xl font-bold">{moves}</div>
-          </div>
-          
-          <div className="glass-card p-4 flex flex-col items-center min-w-[100px]">
-            <div className="text-sm text-green-400 mb-1">Matches</div>
-            <div className="text-2xl font-bold">{matches}/{ICONS.length}</div>
-          </div>
-          
-          <Button
-            onClick={initializeGame}
-            className="flex items-center gap-2 bg-electric-violet hover:bg-electric-violet/80 text-white rounded-md hover:scale-105 transition-all border border-white/10"
-          >
-            <RefreshCw className="h-4 w-4" />
-            New Game
-          </Button>
-        </div>
+        <GameStats 
+          moves={moves}
+          matches={matches}
+          totalPairs={ICONS.length}
+          onNewGame={initializeGame}
+        />
         
         {gameCompleted && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="glass-card p-6 mb-6 border border-green-400/50"
-          >
-            <Trophy className="h-10 w-10 mx-auto text-yellow-400 mb-3" />
-            <h3 className="text-2xl font-bold mb-2">Game Complete!</h3>
-            <p className="text-xl mb-3">Your Score: <span className="text-green-400 font-bold">{lastScore}</span></p>
-            <Button 
-              onClick={initializeGame}
-              className="bg-green-500 hover:bg-green-600 text-white"
-            >
-              Play Again
-            </Button>
-          </motion.div>
+          <GameCompleted 
+            score={lastScore}
+            onPlayAgain={initializeGame}
+          />
         )}
       </div>
       
       <div className="grid grid-cols-4 gap-4">
         {cards.map((card) => (
-          <motion.div
+          <GameCard
             key={card.id}
-            onClick={() => handleCardClick(card.id)}
-            animate={card.isFlipped || card.isMatched ? "flipped" : "unflipped"}
-            variants={cardVariants}
-            transition={{ duration: 0.3 }}
-            className={`relative h-24 sm:h-28 md:h-32 cursor-pointer`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <div className={`absolute inset-0 rounded-xl transition-all duration-300 flex items-center justify-center ${
-              card.isMatched ? 'bg-green-500/30 border-2 border-green-400 shadow-lg shadow-green-400/20' : 
-              card.isFlipped ? 'bg-electric-violet border-2 border-electric-violet' : 
-              'bg-purple-900/60 border-2 border-white/10 hover:border-electric-violet/50'
-            }`}>
-              <div className="text-4xl">
-                {(card.isFlipped || card.isMatched) ? card.icon : '?'}
-              </div>
-              
-              {card.isMatched && (
-                <div className="absolute top-1 right-1">
-                  <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
-                </div>
-              )}
-            </div>
-          </motion.div>
+            id={card.id}
+            icon={card.icon}
+            isFlipped={card.isFlipped}
+            isMatched={card.isMatched}
+            onClick={handleCardClick}
+          />
         ))}
       </div>
       
-      {highScores.length > 0 && (
-        <div className="mt-10">
-          <h3 className="text-xl font-bold mb-4 text-center gradient-text">Top Scores</h3>
-          <div className="glass-card overflow-hidden border border-white/10">
-            <table className="w-full">
-              <thead className="border-b border-white/10">
-                <tr>
-                  <th className="p-3 text-left">Rank</th>
-                  <th className="p-3 text-left">Score</th>
-                  <th className="p-3 text-left">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {highScores.map((score, index) => (
-                  <tr key={index} className="border-b border-white/5 hover:bg-white/5">
-                    <td className="p-3 flex items-center">
-                      {index === 0 ? (
-                        <Trophy className="h-4 w-4 text-yellow-400 mr-2" />
-                      ) : (
-                        <span className="font-mono w-6 text-center">{index + 1}</span>
-                      )}
-                    </td>
-                    <td className="p-3 font-bold">{score.score}</td>
-                    <td className="p-3 text-sm text-gray-400">
-                      {new Date(score.created_at).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      <HighScoresTable scores={highScores} />
     </div>
   );
 };
