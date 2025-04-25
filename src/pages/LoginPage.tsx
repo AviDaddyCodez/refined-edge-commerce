@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { z } from 'zod';
@@ -24,7 +23,6 @@ import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
 import { useAudioEffect } from '@/hooks/useAudioEffect';
 
-// Form schema for login - using less strict email validation
 const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
@@ -45,7 +43,6 @@ const LoginPage = () => {
     }
   }, [user, navigate]);
 
-  // Login form
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingCart, Search, User, Menu, X, LogOut } from "lucide-react";
@@ -17,7 +16,6 @@ const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Handle scroll effect for navbar
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
@@ -28,7 +26,6 @@ const Navigation = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Extract search params on component mount
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const queryParam = params.get('search');
@@ -49,7 +46,6 @@ const Navigation = () => {
     e.preventDefault();
     const query = searchQuery.toLowerCase().trim();
     
-    // Handle page navigation based on search
     if (query) {
       if (query.includes('about')) {
         navigate('/about');
@@ -62,11 +58,9 @@ const Navigation = () => {
       } else if (query.includes('game')) {
         navigate('/game');
       } else {
-        // Default to product search if no page match
         navigate(`/products?search=${encodeURIComponent(query)}`);
       }
       
-      // Clear search and close mobile menu
       setSearchQuery('');
       if (isMobileMenuOpen) setIsMobileMenuOpen(false);
     }
@@ -82,18 +76,23 @@ const Navigation = () => {
     }
   };
 
+  const getUserDisplayName = () => {
+    if (user) {
+      return user.email?.split('@')[0];
+    }
+    return 'Guest';
+  };
+
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
       isScrolled ? 'bg-black/80' : 'bg-transparent'
     } backdrop-blur-lg border-b border-white/10`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
           <Link to="/" className="text-2xl font-bold text-white relative z-10 flex items-center">
             <span className="gradient-text tracking-tight">EcoNeon</span>
           </Link>
           
-          {/* Search Bar - Desktop */}
           <form 
             onSubmit={handleSearch}
             className="hidden md:flex relative mx-4 flex-1 max-w-md"
@@ -116,7 +115,6 @@ const Navigation = () => {
             </div>
           </form>
           
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/" className="text-white hover:text-electric-violet transition-colors">Home</Link>
             <Link to="/products" className="text-white hover:text-electric-violet transition-colors">Products</Link>
@@ -128,7 +126,7 @@ const Navigation = () => {
             {user ? (
               <div className="flex items-center space-x-3">
                 <div className="text-sm text-white/90 px-3 py-1 rounded-full bg-electric-violet/20 border border-electric-violet/30">
-                  {user.email?.split('@')[0]}
+                  {getUserDisplayName()}
                 </div>
                 <button 
                   onClick={handleSignOut} 
@@ -138,10 +136,14 @@ const Navigation = () => {
                 </button>
               </div>
             ) : (
-              <Link to="/auth" className="text-white hover:text-electric-violet transition-colors flex items-center">
-                <User className="h-5 w-5 mr-1" />
-                <span>Login</span>
-              </Link>
+              <div className="flex items-center space-x-4">
+                <Link to="/login" className="text-white hover:text-electric-violet transition-colors">
+                  Login
+                </Link>
+                <Link to="/signup" className="bg-electric-violet text-white px-4 py-2 rounded-full hover:bg-electric-violet/90 transition-colors">
+                  Sign Up
+                </Link>
+              </div>
             )}
             
             <button 
@@ -158,7 +160,6 @@ const Navigation = () => {
             </button>
           </div>
           
-          {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center space-x-4">
             <button 
               onClick={toggleCart} 
@@ -187,7 +188,6 @@ const Navigation = () => {
         </div>
       </div>
       
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-black/90 backdrop-blur-lg border-t border-white/10 animate-fade-in">
           <div className="container mx-auto px-4 py-6">

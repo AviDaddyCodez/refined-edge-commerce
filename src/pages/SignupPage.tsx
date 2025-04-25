@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { z } from 'zod';
@@ -24,7 +23,6 @@ import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
 import { useAudioEffect } from '@/hooks/useAudioEffect';
 
-// Form schema for signup with name field
 const signupSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -46,7 +44,6 @@ const SignupPage = () => {
     }
   }, [user, navigate]);
 
-  // Signup form
   const signupForm = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
